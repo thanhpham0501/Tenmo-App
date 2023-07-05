@@ -1,12 +1,15 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JdbcAccountDao implements AccountDao{
     private JdbcTemplate jdbcTemplate;
 
@@ -21,7 +24,13 @@ public class JdbcAccountDao implements AccountDao{
         Account account = null;
         try {
             String sql = "SELECT * FROM account WHERE account_id = ?;";
-            account = jdbcTemplate.queryForObject(sql, Account.class, id);
+//            account = jdbcTemplate.queryForObject(sql, Account.class, id);
+
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+
+            if (results.next()) {
+                account = mapRowToAccount(results);
+            }
         } catch (CannotGetJdbcConnectionException e){
            throw new DataIntegrityViolationException("");
         }
@@ -74,6 +83,53 @@ public class JdbcAccountDao implements AccountDao{
             return null;
 
         }
-            return account;
+        return account;
+    }
+
+    public void deductBalance(double moneySent, int id) {
+        String sql = "SELECT balance FROM account WHERE account_id = ?;";
+        double capturedBalance = 0.0;
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+
+            if (results.next()) {
+                capturedBalance = results.getDouble("balance");
+            }
+
+        } catch (DataIntegrityViolationException e) {
+             throw new DataIntegrityViolationException("Data integrity violation");
+        }
+
+        capturedBalance -= moneySent;
+
+        updatedBalance(capturedBalance, id);
+    }
+
+    public void increaseBalance(double moneySent, int id) {
+        String sql = "SELECT balance FROM account WHERE account_id = ?;";
+        double capturedBalance = 0.0;
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+
+            if (results.next()) {
+                capturedBalance = results.getDouble("balance");
+            }
+
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("Data integrity violation");
+        }
+
+        capturedBalance += moneySent;
+
+        updatedBalance(capturedBalance, id);
+    }
+
+    private Account mapRowToAccount(SqlRowSet rs) {
+        Account account = new Account();
+        account.setId(rs.getInt("account_id"));
+        account.setUser_id(rs.getInt("user_id"));
+        account.setBalance(rs.getDouble("balance"));
+
+        return account;
     }
 }

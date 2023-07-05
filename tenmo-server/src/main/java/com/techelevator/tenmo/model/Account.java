@@ -1,5 +1,8 @@
 package com.techelevator.tenmo.model;
 
+import org.springframework.stereotype.Component;
+
+
 public class Account {
     private int id;
     private int user_id;
