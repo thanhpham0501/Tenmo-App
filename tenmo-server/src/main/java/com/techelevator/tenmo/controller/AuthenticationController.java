@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.dao.TransactionDao;
-import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.query.Param;
@@ -19,9 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.LoginDTO;
-import com.techelevator.tenmo.model.RegisterUserDTO;
-import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -103,7 +100,15 @@ public class AuthenticationController {
         }
     }
 
+    @RequestMapping(path = "/account/{id}/transactions", method = RequestMethod.GET)
+    public List<Transaction> listTransactions(@PathVariable int id) {
+        return transactionDao.listTransactionsById(id);
+    }
 
+    @RequestMapping(path = "/account/{id}/transactions/{id2}", method = RequestMethod.GET)
+    public Transaction getTransactionById(@PathVariable int id, @PathVariable int id2) {
+        return transactionDao.getTransactionById(id2);
+    }
 
 
 

@@ -20,13 +20,12 @@ public class JdbcTransactionDao implements TransactionDao {
     }
 
     @Override
-    public List<Transaction> getTransactionById(int id) {
+    public List<Transaction> listTransactionsById(int id) {
         List<Transaction> transactionList = new ArrayList<>();
         try {
             String sql = "SELECT * FROM user_transactions " +
-                    "WHERE sender_id = ? OR receiver_id = ? " +
-                    "RETURNING transaction_id";
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+                    "WHERE sender_id = ? OR receiver_id = ?;";
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id, id);
             while (results.next()) {
                 Transaction transaction = mapRowToTransaction(results);
                 transactionList.add(transaction);
@@ -36,6 +35,24 @@ public class JdbcTransactionDao implements TransactionDao {
         }
 
         return transactionList;
+    }
+
+    public Transaction getTransactionById(int id) {
+        Transaction transaction = null;
+
+        String sql = "SELECT * FROM user_transactions " +
+                "WHERE transaction_id = ?;";
+
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+            if (results.next()) {
+                transaction = mapRowToTransaction(results);
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("Data Integrity Violation", e);
+        }
+
+        return transaction;
     }
 
     @Override

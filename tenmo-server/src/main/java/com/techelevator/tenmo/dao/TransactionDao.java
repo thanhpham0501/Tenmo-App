@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface TransactionDao {
 
-    List<Transaction> getTransactionById(int id);
+    List<Transaction> listTransactionsById(int id);
+
+    Transaction getTransactionById(int id);
 
     boolean create(int sender_id, int receiver_id, double money_sent);
 
