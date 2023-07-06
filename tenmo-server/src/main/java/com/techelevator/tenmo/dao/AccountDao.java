@@ -10,4 +10,6 @@ public interface AccountDao {
     double getBalanceByAccountId(int id);
 
     Account updatedBalance(double money, int id);
+    void deductBalance(double moneySent, int id);
+    void increaseBalance(double moneySent, int id);
 }

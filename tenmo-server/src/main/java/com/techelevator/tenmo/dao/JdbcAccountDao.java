@@ -85,7 +85,7 @@ public class JdbcAccountDao implements AccountDao{
         }
         return account;
     }
-
+@Override
     public void deductBalance(double moneySent, int id) {
         String sql = "SELECT balance FROM account WHERE account_id = ?;";
         double capturedBalance = 0.0;
@@ -104,7 +104,7 @@ public class JdbcAccountDao implements AccountDao{
 
         updatedBalance(capturedBalance, id);
     }
-
+    @Override
     public void increaseBalance(double moneySent, int id) {
         String sql = "SELECT balance FROM account WHERE account_id = ?;";
         double capturedBalance = 0.0;

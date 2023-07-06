@@ -8,6 +8,7 @@ import com.techelevator.tenmo.dao.JdbcAccountDao;
 import com.techelevator.tenmo.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -64,6 +65,7 @@ public class AuthenticationController {
         return new LoginResponse(jwt, user);
     }
 
+
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public void register(@Valid @RequestBody RegisterUserDTO newUser) {
@@ -83,6 +85,16 @@ public class AuthenticationController {
     public Account showAccountDetails(@PathVariable int id) {
         Account account = accountDao.findByAccountAccountById(id);
         return account;
+    }
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @RequestMapping(path = "/account/{id}/{id2}/{money}", method = RequestMethod.POST)
+    public void transferMoney (@PathVariable int id, @PathVariable int id2, @PathVariable double money) {
+        if (accountDao.isTransferable(id, money) && money > 0.0 && id != id2) {
+            accountDao.deductBalance(money, id);
+            accountDao.increaseBalance(money, id2);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Insufficient funds.");
+        }
     }
 
     /**
