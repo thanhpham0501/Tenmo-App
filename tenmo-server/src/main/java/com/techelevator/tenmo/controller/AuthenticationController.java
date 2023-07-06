@@ -92,6 +92,7 @@ public class AuthenticationController {
         if (accountDao.isTransferable(id, money) && money > 0.0 && id != id2) {
             accountDao.deductBalance(money, id);
             accountDao.increaseBalance(money, id2);
+            accountDao.sendTransactionInfo(id, id2, money);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Insufficient funds.");
         }

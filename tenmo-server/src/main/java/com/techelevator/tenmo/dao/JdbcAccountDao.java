@@ -124,6 +124,18 @@ public class JdbcAccountDao implements AccountDao{
         updatedBalance(capturedBalance, id);
     }
 
+    public void sendTransactionInfo(int id, int id2, double money){
+        String sql = "INSERT INTO transaction(sender_id, receiver_id, money_amount) VALUES (?, ?, ?);";
+        try {
+            jdbcTemplate.update(sql, id, id2, money);
+        } catch (DataIntegrityViolationException e){
+            throw new DataIntegrityViolationException("Data Integrity Violation", e);
+        }
+
+    }
+
+
+
     private Account mapRowToAccount(SqlRowSet rs) {
         Account account = new Account();
         account.setId(rs.getInt("account_id"));
