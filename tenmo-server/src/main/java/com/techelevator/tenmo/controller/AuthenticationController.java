@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.JdbcAccountDao;
+import com.techelevator.tenmo.dao.TransactionDao;
 import com.techelevator.tenmo.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +40,9 @@ public class AuthenticationController {
 
     @Autowired
     private AccountDao accountDao;
+
+    @Autowired
+    private TransactionDao transactionDao;
 
 
     public AuthenticationController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserDao userDao) {
@@ -92,11 +96,16 @@ public class AuthenticationController {
         if (accountDao.isTransferable(id, money) && money > 0.0 && id != id2) {
             accountDao.deductBalance(money, id);
             accountDao.increaseBalance(money, id2);
-            accountDao.sendTransactionInfo(id, id2, money);
+//            accountDao.sendTransactionInfo(id, id2, money);
+            transactionDao.create(id, id2, money);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Insufficient funds.");
         }
     }
+
+
+
+
 
     /**
      * Object to return as body in JWT Authentication.

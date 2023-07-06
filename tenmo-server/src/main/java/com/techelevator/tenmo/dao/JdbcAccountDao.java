@@ -125,7 +125,7 @@ public class JdbcAccountDao implements AccountDao{
     }
 
     public void sendTransactionInfo(int id, int id2, double money){
-        String sql = "INSERT INTO transaction(sender_id, receiver_id, money_amount) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO user_transactions (sender_id, receiver_id, money_amount) VALUES (?, ?, ?);";
         try {
             jdbcTemplate.update(sql, id, id2, money);
         } catch (DataIntegrityViolationException e){
