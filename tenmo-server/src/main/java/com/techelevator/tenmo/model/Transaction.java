@@ -1,5 +1,9 @@
 package com.techelevator.tenmo.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.validation.constraints.DecimalMin;
+
 public class Transaction {
 
     private int transaction_id;
@@ -7,7 +11,7 @@ public class Transaction {
     private int sender_id;
 
     private int receiver_id;
-
+    @DecimalMin(value = "0.0", message = "Balance should be greater than zero.")
     private double balance;
 
     public Transaction() {}

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.security.jwt.TokenProvider;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,10 +85,11 @@ public class AuthenticationController {
     }
 
     @RequestMapping(path = "/account/{id}", method = RequestMethod.GET)
-    public Account showAccountDetails(@PathVariable int id) {
+    public Account showAccountDetails(@PathVariable int id, Principal principal) {
         Account account = accountDao.findByAccountAccountById(id);
         return account;
     }
+
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/account/{id}/{id2}/{money}", method = RequestMethod.POST)
     public void transferMoney (@PathVariable int id, @PathVariable int id2, @PathVariable double money) {

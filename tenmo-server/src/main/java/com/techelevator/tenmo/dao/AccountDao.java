@@ -14,4 +14,5 @@ public interface AccountDao {
     void increaseBalance(double moneySent, int id);
 
     void sendTransactionInfo(int id, int id2, double money);
+    int isViewingCorrectAccount (int id);
 }

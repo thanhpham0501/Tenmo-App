@@ -23,7 +23,7 @@ public class JdbcAccountDao implements AccountDao{
     public Account findByAccountAccountById(int id){
         Account account = null;
         try {
-            String sql = "SELECT * FROM account WHERE account_id = ?;";
+            String sql = "SELECT * FROM account WHERE user_id = ?;";
 //            account = jdbcTemplate.queryForObject(sql, Account.class, id);
 
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
@@ -132,6 +132,16 @@ public class JdbcAccountDao implements AccountDao{
             throw new DataIntegrityViolationException("Data Integrity Violation", e);
         }
 
+    }
+    @Override
+    public int isViewingCorrectAccount (int id) {
+        int selectedId = 0;
+        String sql = "Select account_id FROM account WHERE user_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+        if (results.next()) {
+            selectedId = results.getInt("account_id");
+        }
+        return selectedId;
     }
 
 
