@@ -37,14 +37,17 @@ public class JdbcTransactionDao implements TransactionDao {
         return transactionList;
     }
 
-    public Transaction getTransactionById(int id) {
+
+
+    @Override
+    public Transaction getTransactionById(int userId, int transactionId) {
         Transaction transaction = null;
 
         String sql = "SELECT * FROM user_transactions " +
-                "WHERE transaction_id = ?;";
+                "WHERE sender_id = ? OR receiver_id = ? AND transaction_id = ?";
 
         try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, userId, transactionId);
             if (results.next()) {
                 transaction = mapRowToTransaction(results);
             }

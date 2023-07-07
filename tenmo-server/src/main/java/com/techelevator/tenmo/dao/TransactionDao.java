@@ -8,7 +8,8 @@ public interface TransactionDao {
 
     List<Transaction> listTransactionsById(int id);
 
-    Transaction getTransactionById(int id);
+
+    Transaction getTransactionById(int userId, int transactionId);
 
     boolean create(int sender_id, int receiver_id, double money_sent);
 

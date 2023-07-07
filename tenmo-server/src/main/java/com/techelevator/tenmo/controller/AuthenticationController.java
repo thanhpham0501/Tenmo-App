@@ -79,14 +79,14 @@ public class AuthenticationController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public List<User> listUsers() {
 
         return userDao.findAll();
 
     }
-    @PreAuthorize("hasAnyRole('CREATOR', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @RequestMapping(path = "/account", method = RequestMethod.GET)
     public Account showAccountDetails( Principal principal) {
         String userName = principal.getName();
@@ -96,31 +96,34 @@ public class AuthenticationController {
         return account;
     }
 
-    @PreAuthorize("hasAnyRole('CREATOR', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/account/{id}/{id2}/{money}", method = RequestMethod.POST)
     public void transferMoney (@PathVariable int id, @PathVariable int id2, @PathVariable double money) {
         if (accountDao.isTransferable(id, money) && money > 0.0 && id != id2) {
             accountDao.deductBalance(money, id);
             accountDao.increaseBalance(money, id2);
-//            accountDao.sendTransactionInfo(id, id2, money);
             transactionDao.create(id, id2, money);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Insufficient funds.");
         }
     }
 
-    @PreAuthorize("hasAnyRole('CREATOR', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @RequestMapping(path = "/account/transactions", method = RequestMethod.GET)
     public List<Transaction> listTransactions(Principal principal) {
-//        return transactionDao.listTransactionsById();
-        return null;
+        String userName = principal.getName();
+        int userId = userDao.findIdByUsername(userName);
+        return transactionDao.listTransactionsById(userId);
     }
 
 
-    @RequestMapping(path = "/account/{id}/transactions/{id2}", method = RequestMethod.GET)
-    public Transaction getTransactionById(@PathVariable int id, @PathVariable int id2) {
-        return transactionDao.getTransactionById(id2);
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @RequestMapping(path = "/account/transactions/{id}", method = RequestMethod.GET)
+    public Transaction getTransactionById(@PathVariable int id, Principal principal) {
+        String userName = principal.getName();
+        int userId = userDao.findIdByUsername(userName);
+        return transactionDao.getTransactionById(userId, id);
     }
 
 
