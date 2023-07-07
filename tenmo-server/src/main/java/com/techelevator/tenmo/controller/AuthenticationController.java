@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -31,6 +32,7 @@ import java.util.List;
  * Controller to authenticate users.
  */
 @RestController
+@PreAuthorize("isAuthenticated()")
 public class AuthenticationController {
 
     private final TokenProvider tokenProvider;
@@ -52,7 +54,7 @@ public class AuthenticationController {
     }
 
 
-
+    @PreAuthorize("permitAll")
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public LoginResponse login(@Valid @RequestBody LoginDTO loginDto) {
 
@@ -68,7 +70,7 @@ public class AuthenticationController {
         return new LoginResponse(jwt, user);
     }
 
-
+    @PreAuthorize("permitAll")
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public void register(@Valid @RequestBody RegisterUserDTO newUser) {
@@ -77,19 +79,24 @@ public class AuthenticationController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public List<User> listUsers() {
 
         return userDao.findAll();
 
     }
-
-    @RequestMapping(path = "/account/{id}", method = RequestMethod.GET)
-    public Account showAccountDetails(@PathVariable int id, Principal principal) {
-        Account account = accountDao.findByAccountAccountById(id);
+    @PreAuthorize("hasAnyRole('CREATOR', 'ADMIN')")
+    @RequestMapping(path = "/account", method = RequestMethod.GET)
+    public Account showAccountDetails( Principal principal) {
+        String userName = principal.getName();
+        System.out.println(userName);
+        int userId = userDao.findIdByUsername(userName);
+        Account account = accountDao.findByAccountAccountById(userId);
         return account;
     }
 
+    @PreAuthorize("hasAnyRole('CREATOR', 'ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @RequestMapping(path = "/account/{id}/{id2}/{money}", method = RequestMethod.POST)
     public void transferMoney (@PathVariable int id, @PathVariable int id2, @PathVariable double money) {
@@ -103,10 +110,13 @@ public class AuthenticationController {
         }
     }
 
-    @RequestMapping(path = "/account/{id}/transactions", method = RequestMethod.GET)
-    public List<Transaction> listTransactions(@PathVariable int id) {
-        return transactionDao.listTransactionsById(id);
+    @PreAuthorize("hasAnyRole('CREATOR', 'ADMIN')")
+    @RequestMapping(path = "/account/transactions", method = RequestMethod.GET)
+    public List<Transaction> listTransactions(Principal principal) {
+//        return transactionDao.listTransactionsById();
+        return null;
     }
+
 
     @RequestMapping(path = "/account/{id}/transactions/{id2}", method = RequestMethod.GET)
     public Transaction getTransactionById(@PathVariable int id, @PathVariable int id2) {

@@ -39,7 +39,7 @@ public class JdbcAccountDao implements AccountDao{
     @Override
     public boolean isTransferable(int id, double moneySend){
         double accountBalance = 0.0;
-        String sql = "SELECT balance FROM account WHERE account_id = ?;";
+        String sql = "SELECT balance FROM account WHERE user_id = ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
             if(rowSet.next()){
@@ -56,7 +56,7 @@ public class JdbcAccountDao implements AccountDao{
     @Override
     public double getBalanceByAccountId(int id){
         double accountBalance = 0.0;
-        String sql = "SELECT balance FROM account WHERE account_id = ?;";
+        String sql = "SELECT balance FROM account WHERE user_id = ?;";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
             if(rowSet.next()){
@@ -70,7 +70,7 @@ public class JdbcAccountDao implements AccountDao{
     @Override
     public Account updatedBalance(double money, int id){
         Account account = null;
-        String sql = "UPDATE account SET balance = ? WHERE account_id = ?;";
+        String sql = "UPDATE account SET balance = ? WHERE user_id = ?;";
         try{
             int numberOfRows = jdbcTemplate.update(sql, money, id);
 
@@ -87,7 +87,7 @@ public class JdbcAccountDao implements AccountDao{
     }
 @Override
     public void deductBalance(double moneySent, int id) {
-        String sql = "SELECT balance FROM account WHERE account_id = ?;";
+        String sql = "SELECT balance FROM account WHERE user_id = ?;";
         double capturedBalance = 0.0;
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
@@ -106,7 +106,7 @@ public class JdbcAccountDao implements AccountDao{
     }
     @Override
     public void increaseBalance(double moneySent, int id) {
-        String sql = "SELECT balance FROM account WHERE account_id = ?;";
+        String sql = "SELECT balance FROM account WHERE user_id = ?;";
         double capturedBalance = 0.0;
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);

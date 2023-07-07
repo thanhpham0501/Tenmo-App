@@ -4,16 +4,16 @@ import org.springframework.stereotype.Component;
 
 
 public class Account {
-    private int id;
+    private int account_id;
     private int user_id;
     private double balance;
 
     public int getId() {
-        return id;
+        return account_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int account_id) {
+        this.account_id = account_id;
     }
 
     public int getUser_id() {
@@ -34,8 +34,8 @@ public class Account {
 
     public Account () {}
 
-    public Account(int id, int user_id, double balance) {
-        this.id = id;
+    public Account(int account_id, int user_id, double balance) {
+        this.account_id = account_id;
         this.user_id = user_id;
         this.balance = balance;
     }

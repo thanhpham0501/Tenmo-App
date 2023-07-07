@@ -54,8 +54,8 @@ CREATE TABLE user_transactions (
 	receiver_id int NOT NULL, 
 	money_amount decimal(13, 2) NOT NULL,
 	CONSTRAINT PK_user_transactions PRIMARY KEY (transaction_id),
-	CONSTRAINT FK_transaction_sender_account FOREIGN KEY (sender_id) REFERENCES account (account_id),
-	CONSTRAINT FK_transaction_receiver_account FOREIGN KEY (receiver_id) REFERENCES account (account_id)
+	CONSTRAINT FK_transaction_sender_account FOREIGN KEY (sender_id) REFERENCES tenmo_user (user_id),
+	CONSTRAINT FK_transaction_receiver_account FOREIGN KEY (receiver_id) REFERENCES tenmo_user (user_id)
 );
 
 
